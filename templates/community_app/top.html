@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>コミュニティ診断トップ</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            padding: 1em;
+            color: white;
+        }
+        main {
+            padding: 2em;
+        }
+        button {
+            padding: 1em 2em;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        footer {
+            margin-top: 3em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>コミュニティ診断</h1>
+    </header>
+    <main>
+        <p>あなたにぴったりな団体・コミュニティを見つけよう！</p>
+        <a href="{% url 'survey_page' %}">
+            <button>診断スタート</button>
+        </a>
+    </main>
+    <footer>
+        <p>&copy; 2025 コミュニティ診断プロジェクト</p>
+    </footer>
+</body>
+</html>

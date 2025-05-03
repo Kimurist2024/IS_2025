@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>診断結果</title>
+</head>
+<body>
+    <h2>診断結果</h2>
+    <p>あなたの選んだキーワード: {{ keywords|join:", " }}</p>
+    
+    <h3>おすすめのコミュニティ</h3>
+    <ul>
+        {% for community, score in matches %}
+            <li>
+                <strong>{{ community.name }}</strong>（マッチ度: {{ score }}）
+                <p>{{ community.description }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'survey_page' %}"><button>もう一度診断する</button></a>
+</body>
+</html>

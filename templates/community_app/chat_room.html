@@ -1,40 +1,53 @@
 {% extends 'base.html' %}
-
-{% block title %}リアルタイムチャット{% endblock %}
-
 {% block content %}
-<h2>リアルタイムチャットルーム「{{ room_name }}」</h2>
+<h2>チャットルーム: {{ room_name }}</h2>
 
-<div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 1em; background-color: #f9f9f9;"></div>
+<!-- チャットログ表示領域 -->
+<div id="chat-log" style="height:300px; overflow-y:scroll; border:1px solid #ccc; padding: 1em; background-color: #fff; margin-bottom: 1em;"></div>
 
-<div style="margin-top: 1em;">
-  <input id="chat-message-input" type="text" size="60" placeholder="メッセージを入力">
-  <button id="chat-send-button">送信</button>
-</div>
+<!-- 入力フォーム -->
+<input id="chat-message-input" type="text" placeholder="メッセージを入力" style="width: 70%; padding: 0.5em;">
+<button id="chat-message-submit" style="padding: 0.5em 1em;">送信</button>
 
+<!-- WebSocket処理 -->
 <script>
   const roomName = "{{ room_name }}";
-  const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-  const chatSocket = new WebSocket(`${ws_scheme}://${window.location.host}/ws/chat/${roomName}/`);
+  const chatSocket = new WebSocket(
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/chat/" + roomName + "/"
+  );
 
-  chatSocket.onmessage = function(e) {
+  // メッセージ受信時の処理
+  chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    const box = document.querySelector('#chat-box');
-    const message = `<p><strong>${data.username}</strong>: ${data.message}</p>`;
-    box.innerHTML += message;
-    box.scrollTop = box.scrollHeight;
+    const chatLog = document.querySelector("#chat-log");
+
+    const newMessage = document.createElement("p");
+    newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+    chatLog.appendChild(newMessage);
+    chatLog.scrollTop = chatLog.scrollHeight;  // 自動スクロール
   };
 
-  chatSocket.onclose = function(e) {
-    console.error('WebSocket closed unexpectedly');
+  // エラー処理
+  chatSocket.onerror = function (e) {
+    console.error("WebSocket error:", e);
   };
 
-  document.querySelector('#chat-send-button').onclick = function(e) {
-    const input = document.querySelector('#chat-message-input');
-    const message = input.value;
+  chatSocket.onclose = function (e) {
+    console.error("WebSocket closed unexpectedly");
+  };
+
+  // メッセージ送信処理
+  document.querySelector("#chat-message-submit").onclick = function (e) {
+    e.preventDefault();  // デフォルトのフォーム送信防止
+    const messageInputDom = document.querySelector("#chat-message-input");
+    const message = messageInputDom.value;
     if (message.trim() !== "") {
-      chatSocket.send(JSON.stringify({ 'message': message }));
-      input.value = '';
+      chatSocket.send(JSON.stringify({
+        message: message
+      }));
+      messageInputDom.value = "";
     }
   };
 </script>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}アンケートアプリ{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-css-reset/dist/reset.min.css">
+    <style>
+        body {
+            font-family: "Helvetica", sans-serif;
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: #f9f9f9;
+        }
+        header, footer {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #0077cc;
+        }
+        h1 {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'top_page' %}">コミュニティアンケート</a></h1>
+        <nav>
+            {% if user.is_authenticated %}
+                <span>こんにちは、{{ user.username }}さん</span> |
+                <a href="{% url 'survey_page' %}">アンケート</a> |
+                <a href="{% url 'logout' %}">ログアウト</a>
+            {% else %}
+                <a href="{% url 'login' %}">ログイン</a> |
+                <a href="{% url 'signup' %}">新規登録</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        <p>&copy; 2025 アンケートアプリ All rights reserved.</p>
+    </footer>
+</body>
+</html>
+

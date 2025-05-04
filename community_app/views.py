@@ -3,6 +3,7 @@ from .models import Question, Choice, UserAnswer, Community
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.contrib.auth.forms import UserCreationForm
 
 # 1. トップページ
 def top_page(request):
@@ -18,7 +19,6 @@ def survey_page(request):
         for question in questions:
             choice_id = request.POST.get(str(question.id))
             if choice_id:
-                # 修正ポイント：choice_id は数値なので Choice オブジェクトに変換する
                 choice = Choice.objects.get(id=choice_id)
                 UserAnswer.objects.update_or_create(
                     user=request.user,
@@ -49,10 +49,19 @@ def result_page(request):
     })
 
 
-# 4. ログアウト専用ページ（ユーザーが明示的に実行）
+# 4. ログアウト専用ページ
 def logout_view(request):
     logout(request)
     return redirect('top_page')
 
 
-
+# 5. ユーザー登録（サインアップ）ページ
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')  # Django組み込みlogin URLへ
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})

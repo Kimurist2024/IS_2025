@@ -7,7 +7,8 @@ SECRET_KEY = "django-insecure-29538$9y=wgux7%th7zhg&4w6x$%_w(%(5lz^6rw)ct!u2-usc
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ✅ Renderでの公開用ドメインを許可
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
 
 # アプリケーション定義
 INSTALLED_APPS = [
@@ -35,7 +36,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # login.htmlを配置するために必要
+        "DIRS": [BASE_DIR / "templates"],  # login.html などテンプレート用
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -85,11 +86,19 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------
-# ✅ 以下を追加（ログインセッションの制御）
-# ブラウザを閉じるとセッションが無効になり、自動ログアウトされる
+# ✅ ログインセッション制御（自動ログアウト＋時間制限）
+
+# 無操作30分（1800秒）で自動ログアウト
+SESSION_COOKIE_AGE = 30
+
+# ブラウザを閉じたらセッション終了
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-# ログイン後にリダイレクトするURL（トップページなど）
-LOGIN_REDIRECT_URL = '/'
-# ---------------------------------------------------------
+# 最後のリクエストから有効期限を延長しない（ログイン時から固定）
+SESSION_SAVE_EVERY_REQUEST = False
 
+# ✅ ログイン・ログアウト時の遷移先
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+# ---------------------------------------------------------

@@ -2,16 +2,18 @@ from django.shortcuts import render, redirect
 from .models import Question, Choice, UserAnswer, Community
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 # 1. トップページ
 def top_page(request):
     return render(request, 'community_app/top.html')
 
 
-# 2. アンケートページ（複数質問を表示）
+# 2. アンケートページ（ログインが必要）
 @login_required
 def survey_page(request):
     questions = Question.objects.all()
+
     if request.method == "POST":
         for question in questions:
             choice_id = request.POST.get(str(question.id))
@@ -26,7 +28,7 @@ def survey_page(request):
     return render(request, 'community_app/survey.html', {'questions': questions})
 
 
-# 3. 結果ページ（マッチングロジック例：タグ一致数が多い団体を上位に）
+# 3. 結果ページ（タグ一致によるマッチング）
 @login_required
 def result_page(request):
     user_answers = UserAnswer.objects.filter(user=request.user)
@@ -43,4 +45,11 @@ def result_page(request):
         'matches': top_matches,
         'keywords': keywords
     })
+
+
+# 4. ログアウト専用ページ（ユーザーが明示的に実行）
+def logout_view(request):
+    logout(request)
+    return redirect('top_page')
+
 

@@ -7,4 +7,5 @@ urlpatterns = [
     path('result/', views.result_page, name='result_page'),# 結果ページ（要ログイン）
     path('logout/', views.logout_view, name='logout'),     # ログアウト
     path('signup/', views.signup, name='signup'),          # ユーザー登録（未ログインOK）
+    path('communities/', views.community_list, name='community_list'),
 ]

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>コミュニティ一覧</title>
+</head>
+<body>
+    <h1>コミュニティ一覧</h1>
+    <ul>
+        {% for community in communities %}
+            <li>
+                <strong>{{ community.name }}</strong>: {{ community.description }}
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'top_page' %}">トップページに戻る</a>
+</body>
+</html>

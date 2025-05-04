@@ -4,7 +4,19 @@ gunicorn==23.0.0
 packaging==25.0
 sqlparse==0.5.3
 
-# ▼ リアルタイムチャット用に追加 ▼
+# ▼ データベースURL管理（Render用など）▼
+dj-database-url
+
+# ▼ ASGIサーバーとリアルタイム機能 ▼
 channels==4.0.0
 channels-redis==4.1.0
 daphne==4.0.0
+
+# ▼ Redis サポート用（channels-redisの依存）▼
+redis>=4.5.3
+msgpack~=1.0
+
+# ▼ Daphne の依存パッケージ ▼
+autobahn>=22.4.2
+twisted>=22.4
+txaio>=21.2.1

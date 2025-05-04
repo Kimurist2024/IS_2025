@@ -3,3 +3,8 @@ Django==4.2
 gunicorn==23.0.0
 packaging==25.0
 sqlparse==0.5.3
+
+# ▼ リアルタイムチャット用に追加 ▼
+channels==4.0.0
+channels-redis==4.1.0
+daphne==4.0.0

@@ -10,6 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default")
 DEBUG = os.getenv("DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost 127.0.0.1 .onrender.com").split()
+
+# ✅ CSRF 対策の信頼済みオリジン（RenderのURLを明示）
+CSRF_TRUSTED_ORIGINS = [
+    "https://is-2025-20.onrender.com",  # ← ここはあなたのRenderのURLに合わせて変更
+]
 # --------------------------------------------------
 
 # アプリケーション定義
@@ -20,7 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "channels",               # ✅ Channels追加
+    "channels",
     "community_app",
 ]
 
@@ -53,10 +58,10 @@ TEMPLATES = [
     },
 ]
 
-# ✅ WSGI から ASGI に切り替え
+# ✅ ASGI 設定（Daphne用）
 ASGI_APPLICATION = "config.asgi.application"
 
-# ✅ Channel Layers（Redis）
+# ✅ Redisによるチャネルレイヤー（WebSocketなどに必要）
 REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
 CHANNEL_LAYERS = {
     "default": {
@@ -67,7 +72,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-# ✅ データベース（Render用にDATABASE_URLも対応）
+# ✅ データベース（RenderのDATABASE_URL対応）
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=600
@@ -101,7 +106,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------
 # ✅ ログインセッション制御
-SESSION_COOKIE_AGE = 30
+SESSION_COOKIE_AGE = 30  # 秒
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 

@@ -1,14 +1,16 @@
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-29538$9y=wgux7%th7zhg&4w6x$%_w(%(5lz^6rw)ct!u2-usc"
-
-DEBUG = True
-
-# ✅ Renderでの公開用ドメインを許可
-ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+# --------------------------------------------------
+# セキュリティ設定（本番は環境変数で管理）
+SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default")
+DEBUG = os.getenv("DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost 127.0.0.1 .onrender.com").split()
+# --------------------------------------------------
 
 # アプリケーション定義
 INSTALLED_APPS = [
@@ -18,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",               # ✅ Channels追加
     "community_app",
 ]
 
@@ -37,7 +40,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # login.html などテンプレート用
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -50,13 +53,25 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
+# ✅ WSGI から ASGI に切り替え
+ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
+# ✅ Channel Layers（Redis）
+REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
+CHANNEL_LAYERS = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [REDIS_URL],
+        },
+    },
+}
+
+# ✅ データベース（Render用にDATABASE_URLも対応）
+DATABASES = {
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=600
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -75,30 +90,21 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "ja"
-
 TIME_ZONE = "Asia/Tokyo"
-
 USE_I18N = True
-
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------------
-# ✅ ログインセッション制御（自動ログアウト＋時間制限）
-
-# 無操作30分（1800秒）で自動ログアウト
+# ✅ ログインセッション制御
 SESSION_COOKIE_AGE = 30
-
-# ブラウザを閉じたらセッション終了
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# 最後のリクエストから有効期限を延長しない（ログイン時から固定）
 SESSION_SAVE_EVERY_REQUEST = False
 
-# ✅ ログイン・ログアウト時の遷移先
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'

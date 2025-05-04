@@ -18,10 +18,12 @@ def survey_page(request):
         for question in questions:
             choice_id = request.POST.get(str(question.id))
             if choice_id:
+                # 修正ポイント：choice_id は数値なので Choice オブジェクトに変換する
+                choice = Choice.objects.get(id=choice_id)
                 UserAnswer.objects.update_or_create(
                     user=request.user,
                     question=question,
-                    defaults={'choice_id': choice_id}
+                    defaults={'choice': choice}
                 )
         return redirect('result_page')
 
@@ -51,5 +53,6 @@ def result_page(request):
 def logout_view(request):
     logout(request)
     return redirect('top_page')
+
 
 

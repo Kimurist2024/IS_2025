@@ -43,12 +43,20 @@
     </header>
     <main>
         <p>あなたにぴったりな団体・コミュニティを見つけよう！</p>
+
         <a href="{% url 'survey_page' %}">
             <button>診断スタート</button>
         </a>
         <br><br>
+
         <a href="{% url 'community_list' %}">
             <button>団体一覧を見る</button>
+        </a>
+        <br><br>
+
+        <!-- ✅ チャットルームへのボタン -->
+        <a href="{% url 'chat_room' room_name='room1' %}">
+            <button>チャットルームに入る</button>
         </a>
     </main>
     <footer>

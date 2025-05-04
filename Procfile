@@ -1,2 +1,2 @@
-web: daphne config.asgi:application
+web: daphne -b 0.0.0.0 -p 10000 config.asgi:application
 

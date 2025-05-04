@@ -29,9 +29,6 @@ def survey_page(request):
 
     return render(request, 'community_app/survey.html', {'questions': questions})
 
-def community_list(request):
-    communities = Community.objects.all()
-    return render(request, 'community_app/community_list.html', {'communities': communities})
 
 # 3. 結果ページ（ユーザーの回答とタグでマッチング）
 @login_required
@@ -60,7 +57,6 @@ def logout_view(request):
 
 # 5. ユーザー登録（サインアップ）ページ
 def signup(request):
-    # すでにログイン済みならトップページへリダイレクト
     if request.user.is_authenticated:
         return redirect('top_page')
 
@@ -68,9 +64,21 @@ def signup(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # 登録直後にログイン
+            login(request, user)
             return redirect('top_page')
     else:
         form = UserCreationForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
+
+# 6. コミュニティ一覧ページ
+def community_list(request):
+    communities = Community.objects.all()
+    return render(request, 'community_app/community_list.html', {'communities': communities})
+
+
+# 7. チャットルームページ
+@login_required
+def chat_room(request, room_name):
+    return render(request, 'community_app/chat_room.html', {'room_name': room_name})

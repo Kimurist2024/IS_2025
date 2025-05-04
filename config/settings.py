@@ -62,8 +62,9 @@ TEMPLATES = [
 # ✅ ASGI 設定（Daphne/Channels 用）
 ASGI_APPLICATION = "config.asgi.application"
 
-# ✅ Redis チャネルレイヤー
-REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
+# ✅ Redis チャネルレイヤー設定（Upstash Redis を環境変数から使用）
+REDIS_URL = os.environ["REDIS_URL"]  # Render の環境変数に rediss://... を設定
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -73,7 +74,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-# ✅ データベース設定（環境変数 DATABASE_URL 対応）
+# ✅ データベース設定（環境変数 DATABASE_URL にも対応）
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=600

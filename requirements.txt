@@ -20,3 +20,4 @@ msgpack~=1.0
 autobahn>=22.4.2
 twisted>=22.4
 txaio>=21.2.1
+twisted[tls,http2]

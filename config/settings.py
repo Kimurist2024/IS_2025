@@ -9,12 +9,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # セキュリティ設定（本番は環境変数で管理）
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost 127.0.0.1 .onrender.com").split()
 
-# ✅ CSRF 対策の信頼済みオリジン（RenderのURLを明示）
-CSRF_TRUSTED_ORIGINS = [
-    "https://is-2025-20.onrender.com",  # ← ここはあなたのRenderのURLに合わせて変更
-]
+# ✅ 明示的に定義：Render対応のALLOWED_HOSTS
+ALLOWED_HOSTS = ["is-2025-20.onrender.com", "127.0.0.1", "localhost"]
+
+# ✅ CSRF対策：RenderのURLを信頼済みに
+CSRF_TRUSTED_ORIGINS = ["https://is-2025-20.onrender.com"]
 # --------------------------------------------------
 
 # アプリケーション定義
@@ -58,10 +58,10 @@ TEMPLATES = [
     },
 ]
 
-# ✅ ASGI 設定（Daphne用）
+# ✅ ASGI 設定（Channels用）
 ASGI_APPLICATION = "config.asgi.application"
 
-# ✅ Redisによるチャネルレイヤー（WebSocketなどに必要）
+# ✅ Channels用 Redis Layer
 REDIS_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379")
 CHANNEL_LAYERS = {
     "default": {
@@ -72,7 +72,7 @@ CHANNEL_LAYERS = {
     },
 }
 
-# ✅ データベース（RenderのDATABASE_URL対応）
+# ✅ データベース（Render用に DATABASE_URL 対応）
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}", conn_max_age=600

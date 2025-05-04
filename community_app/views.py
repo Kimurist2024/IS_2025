@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect
 from .models import Question, Choice, UserAnswer, Community
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
 
-# 1. トップページ
+# 1. トップページ（ログイン済みかどうかで分岐してもよい）
 def top_page(request):
     return render(request, 'community_app/top.html')
 
 
-# 2. アンケートページ（ログインが必要）
+# 2. アンケートページ（ログイン必須）
 @login_required
 def survey_page(request):
     questions = Question.objects.all()
@@ -30,7 +30,7 @@ def survey_page(request):
     return render(request, 'community_app/survey.html', {'questions': questions})
 
 
-# 3. 結果ページ（タグ一致によるマッチング）
+# 3. 結果ページ（ユーザーの回答とタグでマッチング）
 @login_required
 def result_page(request):
     user_answers = UserAnswer.objects.filter(user=request.user)
@@ -49,7 +49,7 @@ def result_page(request):
     })
 
 
-# 4. ログアウト専用ページ
+# 4. ログアウト処理
 def logout_view(request):
     logout(request)
     return redirect('top_page')
@@ -57,11 +57,17 @@ def logout_view(request):
 
 # 5. ユーザー登録（サインアップ）ページ
 def signup(request):
+    # すでにログイン済みならトップページへリダイレクト
+    if request.user.is_authenticated:
+        return redirect('top_page')
+
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')  # Django組み込みlogin URLへ
+            user = form.save()
+            login(request, user)  # 登録直後にログイン
+            return redirect('top_page')
     else:
         form = UserCreationForm()
+
     return render(request, 'registration/signup.html', {'form': form})

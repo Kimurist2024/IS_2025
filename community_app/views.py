@@ -29,6 +29,9 @@ def survey_page(request):
 
     return render(request, 'community_app/survey.html', {'questions': questions})
 
+def community_list(request):
+    communities = Community.objects.all()
+    return render(request, 'community_app/community_list.html', {'communities': communities})
 
 # 3. 結果ページ（ユーザーの回答とタグでマッチング）
 @login_required
